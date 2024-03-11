@@ -2,4 +2,15 @@
     <string name="app_name">GithubUser</string>
     <string name="search_user">Search user</string>
     <string name="username">username</string>
+    <string name="tab_text_1">Followers</string>
+    <string name="tab_text_2">Following</string>
+    <string name="full_name">full name</string>
+    <plurals name="followers">
+        <item quantity="one">%s follower</item>
+        <item quantity="zero">%s follower</item>
+        <item quantity="other">%s followers</item>
+    </plurals>
+    <string name="following">%d following</string>
+    <string name="follower">follower</string>
+    <string name="bio">bio</string>
 </resources>

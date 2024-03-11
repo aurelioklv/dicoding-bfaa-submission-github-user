@@ -41,6 +41,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.isLoading.observe(this) {
             showLoading(it)
         }
+
+        with(binding) {
+            searchView.setupWithSearchBar(searchBar)
+            searchView.editText.setOnEditorActionListener { v, actionId, event ->
+                searchBar.setText(searchView.text)
+                searchView.hide()
+                viewModel.searchUser(searchView.text.toString())
+                false
+            }
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {
