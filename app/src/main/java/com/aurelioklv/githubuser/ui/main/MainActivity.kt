@@ -29,19 +29,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val layoutManager = LinearLayoutManager(this)
-        binding.rvUsers.layoutManager = layoutManager
+        setupSearchBar()
+        setupRecyclerView()
+        observeLiveData()
+    }
 
-        val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
-        binding.rvUsers.addItemDecoration(itemDecoration)
-
-        viewModel.users.observe(this) {
-            setUserSearchResult(it)
-        }
-        viewModel.isLoading.observe(this) {
-            showLoading(it)
-        }
-
+    private fun setupSearchBar() {
         with(binding) {
             searchView.setupWithSearchBar(searchBar)
             searchView.editText.setOnEditorActionListener { v, actionId, event ->
@@ -51,6 +44,19 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+
+    private fun setupRecyclerView() {
+        val layoutManager = LinearLayoutManager(this)
+        binding.rvUsers.layoutManager = layoutManager
+
+        val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
+        binding.rvUsers.addItemDecoration(itemDecoration)
+    }
+
+    private fun observeLiveData() {
+        viewModel.users.observe(this) { setUserSearchResult(it) }
+        viewModel.isLoading.observe(this) { showLoading(it) }
     }
 
     private fun showLoading(isLoading: Boolean) {

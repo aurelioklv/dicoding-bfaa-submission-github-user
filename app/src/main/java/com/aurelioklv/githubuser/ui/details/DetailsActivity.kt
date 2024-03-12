@@ -5,15 +5,19 @@ import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.viewpager2.widget.ViewPager2
 import com.aurelioklv.githubuser.R
 import com.aurelioklv.githubuser.data.response.UserResponse
 import com.aurelioklv.githubuser.databinding.ActivityDetailsBinding
 import com.aurelioklv.githubuser.ui.formatCount
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailsBinding
@@ -35,16 +39,27 @@ class DetailsActivity : AppCompatActivity() {
 
         if (intent != null && intent.hasExtra(EXTRA_USERNAME)) {
             username = intent.getStringExtra(EXTRA_USERNAME)
-            viewModel.getUserDetails(username!!)
+            viewModel.getUserDetails(username!!, this)
         }
 
-        viewModel.user.observe(this) {
-            setUserDetails(it)
-        }
+        setupViewPager()
+        observeLiveData()
+    }
 
-        viewModel.isLoading.observe(this) {
-            showLoading(it)
-        }
+    private fun setupViewPager() {
+        val sectionsPagerAdapter = SectionsPagerAdapter(this, username!!)
+        val viewPager: ViewPager2 = findViewById(R.id.view_pager)
+        viewPager.adapter = sectionsPagerAdapter
+
+        val tabs: TabLayout = findViewById(R.id.tabs)
+        TabLayoutMediator(tabs, viewPager) { tab, position ->
+            tab.text = resources.getString(TAB_TITLES[position])
+        }.attach()
+    }
+
+    private fun observeLiveData() {
+        viewModel.user.observe(this) { setUserDetails(it) }
+        viewModel.isLoading.observe(this) { showLoading(it) }
     }
 
     private fun setUserDetails(userResponse: UserResponse) {
@@ -93,5 +108,8 @@ class DetailsActivity : AppCompatActivity() {
     companion object {
         const val TAG = "DetailsActivity"
         const val EXTRA_USERNAME = "username"
+
+        @StringRes
+        private val TAB_TITLES = intArrayOf(R.string.tab_text_1, R.string.tab_text_2)
     }
 }

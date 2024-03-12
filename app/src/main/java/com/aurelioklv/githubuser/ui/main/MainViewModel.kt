@@ -18,7 +18,7 @@ class MainViewModel : ViewModel() {
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
-        searchUser(initialQuery)
+        searchUser(INITIAL_QUERY)
     }
 
     fun searchUser(query: String) {
@@ -48,7 +48,7 @@ class MainViewModel : ViewModel() {
     }
 
     companion object {
-        private val initialQuery = "android"
+        const val INITIAL_QUERY = "android"
         const val TAG = "MainViewModel"
     }
 }

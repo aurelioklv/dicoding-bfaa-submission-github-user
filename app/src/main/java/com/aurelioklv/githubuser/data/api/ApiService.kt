@@ -1,7 +1,6 @@
 package com.aurelioklv.githubuser.data.api
 
-import com.aurelioklv.githubuser.data.response.FollowersResponse
-import com.aurelioklv.githubuser.data.response.FollowingResponse
+import com.aurelioklv.githubuser.data.response.FollowerFollowingItem
 import com.aurelioklv.githubuser.data.response.UserResponse
 import com.aurelioklv.githubuser.data.response.UserSearchResponse
 import retrofit2.Call
@@ -16,9 +15,9 @@ interface ApiService {
     @GET("users/{username}")
     fun getUserDetails(@Path("username") username: String): Call<UserResponse>
 
-    @GET("users/{username}/followers")
-    fun getFollowers(@Path("username") username: String): Call<FollowersResponse>
+    @GET("users/{username}/followers?per_page=100")
+    fun getFollowers(@Path("username") username: String): Call<List<FollowerFollowingItem>>
 
-    @GET("users/{username}/following")
-    fun getFollowing(@Path("username") username: String): Call<FollowingResponse>
+    @GET("users/{username}/following?per_page=100")
+    fun getFollowing(@Path("username") username: String): Call<List<FollowerFollowingItem>>
 }

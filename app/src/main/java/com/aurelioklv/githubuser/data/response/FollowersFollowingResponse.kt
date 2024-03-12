@@ -2,18 +2,6 @@ package com.aurelioklv.githubuser.data.response
 
 import com.google.gson.annotations.SerializedName
 
-data class FollowersResponse(
-
-    @field:SerializedName("FollowersResponse")
-    val followers: List<FollowerFollowingItem>,
-)
-
-data class FollowingResponse(
-
-    @field:SerializedName("FollowingResponse")
-    val following: List<FollowerFollowingItem>,
-)
-
 data class FollowerFollowingItem(
 
     @field:SerializedName("gists_url")
