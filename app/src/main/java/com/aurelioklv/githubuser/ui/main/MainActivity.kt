@@ -2,6 +2,7 @@ package com.aurelioklv.githubuser.ui.main
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -57,6 +58,11 @@ class MainActivity : AppCompatActivity() {
     private fun observeLiveData() {
         viewModel.users.observe(this) { setUserSearchResult(it) }
         viewModel.isLoading.observe(this) { showLoading(it) }
+        viewModel.errorMessage.observe(this) {
+            if (it.isNotEmpty()) {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {

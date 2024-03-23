@@ -1,12 +1,9 @@
 package com.aurelioklv.githubuser.ui.details.follow
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.aurelioklv.githubuser.R
 import com.aurelioklv.githubuser.data.api.ApiConfig
 import com.aurelioklv.githubuser.data.response.FollowerFollowingItem
 import retrofit2.Call
@@ -20,7 +17,10 @@ class FollowViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun setData(username: String, type: Int, context: Context) {
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
+
+    fun setData(username: String, type: Int) {
         _isLoading.value = true
         val client = when (type) {
             1 -> ApiConfig.getApiService().getFollowers(username)
@@ -34,27 +34,20 @@ class FollowViewModel : ViewModel() {
                 _isLoading.value = false
                 if (response.isSuccessful) {
                     val responseBody = response.body()
+                    _errorMessage.value = ""
                     responseBody?.let {
                         _followData.value = it
                     }
                 } else {
+                    _errorMessage.value = response.message()
                     Log.e(TAG, "onResponse !isSuccessful: $response")
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.error_message),
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<List<FollowerFollowingItem>>, t: Throwable) {
                 _isLoading.value = false
+                _errorMessage.value = t.message
                 Log.e(TAG, "onFailure: ${t.message}")
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.error_message),
-                    Toast.LENGTH_LONG
-                ).show()
             }
         })
     }

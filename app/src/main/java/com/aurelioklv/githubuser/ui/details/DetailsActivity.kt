@@ -3,6 +3,7 @@ package com.aurelioklv.githubuser.ui.details
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -10,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.viewpager2.widget.ViewPager2
 import com.aurelioklv.githubuser.R
 import com.aurelioklv.githubuser.data.response.UserResponse
 import com.aurelioklv.githubuser.databinding.ActivityDetailsBinding
@@ -39,7 +39,7 @@ class DetailsActivity : AppCompatActivity() {
 
         if (intent != null && intent.hasExtra(EXTRA_USERNAME)) {
             username = intent.getStringExtra(EXTRA_USERNAME)
-            viewModel.getUserDetails(username!!, this)
+            viewModel.getUserDetails(username!!)
         }
 
         setupViewPager()
@@ -48,7 +48,7 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun setupViewPager() {
         val sectionsPagerAdapter = SectionsPagerAdapter(this, username!!)
-        val viewPager: ViewPager2 = findViewById(R.id.view_pager)
+        val viewPager = binding.viewPager
         viewPager.adapter = sectionsPagerAdapter
 
         val tabs: TabLayout = findViewById(R.id.tabs)
@@ -60,6 +60,11 @@ class DetailsActivity : AppCompatActivity() {
     private fun observeLiveData() {
         viewModel.user.observe(this) { setUserDetails(it) }
         viewModel.isLoading.observe(this) { showLoading(it) }
+        viewModel.errorMessage.observe(this) {
+            if (it.isNotEmpty()) {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setUserDetails(userResponse: UserResponse) {

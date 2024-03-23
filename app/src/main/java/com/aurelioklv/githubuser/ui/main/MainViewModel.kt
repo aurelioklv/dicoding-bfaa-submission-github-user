@@ -17,6 +17,9 @@ class MainViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
+
     init {
         searchUser(INITIAL_QUERY)
     }
@@ -36,12 +39,14 @@ class MainViewModel : ViewModel() {
                         _users.value = responseBody.items
                     }
                 } else {
+                    _errorMessage.value = response.message()
                     Log.e(TAG, "onResponse !isSuccessful: $response")
                 }
             }
 
             override fun onFailure(call: retrofit2.Call<UserSearchResponse>, t: Throwable) {
                 _isLoading.value = false
+                _errorMessage.value = t.message
                 Log.e(TAG, "onFailure: ${t.message}")
             }
         })
