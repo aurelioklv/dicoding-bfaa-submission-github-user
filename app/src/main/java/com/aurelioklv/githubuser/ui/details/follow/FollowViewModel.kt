@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.aurelioklv.githubuser.data.api.ApiConfig
-import com.aurelioklv.githubuser.data.response.FollowerFollowingItem
+import com.aurelioklv.githubuser.data.remote.api.ApiConfig
+import com.aurelioklv.githubuser.data.remote.response.FollowerFollowingItem
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

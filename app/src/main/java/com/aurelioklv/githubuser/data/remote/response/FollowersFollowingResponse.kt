@@ -1,4 +1,4 @@
-package com.aurelioklv.githubuser.data.response
+package com.aurelioklv.githubuser.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 

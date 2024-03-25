@@ -4,13 +4,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.aurelioklv.githubuser.data.api.ApiConfig
-import com.aurelioklv.githubuser.data.response.UserResponse
+import androidx.lifecycle.viewModelScope
+import com.aurelioklv.githubuser.data.FavoriteUserRepository
+import com.aurelioklv.githubuser.data.local.FavoriteUser
+import com.aurelioklv.githubuser.data.remote.api.ApiConfig
+import com.aurelioklv.githubuser.data.remote.response.UserResponse
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailsViewModel : ViewModel() {
+class DetailsViewModel(private val repository: FavoriteUserRepository) : ViewModel() {
     private val _user = MutableLiveData<UserResponse>()
     val user: LiveData<UserResponse> = _user
 
@@ -19,6 +23,9 @@ class DetailsViewModel : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
+
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> = _isFavorite
 
     fun getUserDetails(username: String) {
         _isLoading.value = true
@@ -32,6 +39,9 @@ class DetailsViewModel : ViewModel() {
                     responseBody?.let {
                         _user.value = it
                     }
+                    viewModelScope.launch {
+                        _isFavorite.postValue(repository.isFavorite(_user.value!!.login))
+                    }
                 } else {
                     _errorMessage.value = response.message()
                     Log.e(TAG, "onResponse !isSuccessFul: $response")
@@ -44,6 +54,20 @@ class DetailsViewModel : ViewModel() {
                 Log.e(TAG, "onFailure: ${t.message}")
             }
         })
+    }
+
+
+    fun setUserFavorite(favoriteUser: FavoriteUser) {
+        viewModelScope.launch {
+            val isFavorite = repository.isFavorite(favoriteUser.username)
+            if (isFavorite) {
+                repository.deleteFavoriteUser(favoriteUser)
+                _isFavorite.postValue(false)
+            } else {
+                repository.insertFavoriteUser(favoriteUser)
+                _isFavorite.postValue(true)
+            }
+        }
     }
 
     companion object {

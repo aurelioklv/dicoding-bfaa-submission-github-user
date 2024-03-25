@@ -1,8 +1,8 @@
-package com.aurelioklv.githubuser.data.api
+package com.aurelioklv.githubuser.data.remote.api
 
-import com.aurelioklv.githubuser.data.response.FollowerFollowingItem
-import com.aurelioklv.githubuser.data.response.UserResponse
-import com.aurelioklv.githubuser.data.response.UserSearchResponse
+import com.aurelioklv.githubuser.data.remote.response.FollowerFollowingItem
+import com.aurelioklv.githubuser.data.remote.response.UserResponse
+import com.aurelioklv.githubuser.data.remote.response.UserSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

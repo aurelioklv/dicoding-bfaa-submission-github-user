@@ -12,16 +12,20 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.aurelioklv.githubuser.R
-import com.aurelioklv.githubuser.data.response.UserResponse
+import com.aurelioklv.githubuser.data.local.FavoriteUser
+import com.aurelioklv.githubuser.data.remote.response.UserResponse
 import com.aurelioklv.githubuser.databinding.ActivityDetailsBinding
 import com.aurelioklv.githubuser.ui.formatCount
+import com.aurelioklv.githubuser.util.ViewModelFactory
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailsBinding
-    private val viewModel: DetailsViewModel by viewModels()
+    private val viewModel: DetailsViewModel by viewModels<DetailsViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
 
     private var username: String? = null
 
@@ -44,6 +48,10 @@ class DetailsActivity : AppCompatActivity() {
 
         setupViewPager()
         observeLiveData()
+        binding.fabFavorite.setOnClickListener {
+            saveUser(viewModel.user.value!!)
+        }
+        supportActionBar?.hide()
     }
 
     private fun setupViewPager() {
@@ -59,11 +67,21 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun observeLiveData() {
         viewModel.user.observe(this) { setUserDetails(it) }
-        viewModel.isLoading.observe(this) { showLoading(it) }
+        viewModel.isLoading.observe(this) {
+            binding.fabFavorite.isEnabled = !it
+            showLoading(it)
+        }
         viewModel.errorMessage.observe(this) {
             if (it.isNotEmpty()) {
                 Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                binding.fabFavorite.isEnabled = false
             }
+        }
+        viewModel.isFavorite.observe(this) {
+            binding.fabFavorite.setImageResource(
+                if (it) R.drawable.baseline_favorite_24
+                else R.drawable.baseline_favorite_border_24
+            )
         }
     }
 
@@ -108,6 +126,11 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun saveUser(user: UserResponse) {
+        val favoriteUser = FavoriteUser(user.login, user.avatarUrl)
+        viewModel.setUserFavorite(favoriteUser)
     }
 
     companion object {

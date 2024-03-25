@@ -1,4 +1,4 @@
-package com.aurelioklv.githubuser.data.api
+package com.aurelioklv.githubuser.data.remote.api
 
 import com.aurelioklv.githubuser.BuildConfig
 import okhttp3.Interceptor
