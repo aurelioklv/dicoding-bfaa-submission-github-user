@@ -36,6 +36,7 @@
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/baseline_arrow_outward_24"
         android:ellipsize="end"
         android:maxLines="1"
         android:textSize="18sp"

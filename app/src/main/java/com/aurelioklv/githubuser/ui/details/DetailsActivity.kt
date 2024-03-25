@@ -1,16 +1,14 @@
 package com.aurelioklv.githubuser.ui.details
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.aurelioklv.githubuser.R
 import com.aurelioklv.githubuser.data.local.FavoriteUser
 import com.aurelioklv.githubuser.data.remote.response.UserResponse
@@ -31,15 +29,15 @@ class DetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
+//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+//            insets
+//        }
 
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         if (intent != null && intent.hasExtra(EXTRA_USERNAME)) {
             username = intent.getStringExtra(EXTRA_USERNAME)
@@ -102,6 +100,7 @@ class DetailsActivity : AppCompatActivity() {
                 binding.tvName.text = name
             }
             binding.tvUsername.text = userResponse.login
+            binding.tvUsername.setOnClickListener { shareUserDetails(userResponse) }
 
             if (bio.isNullOrEmpty() || bio.isBlank()) {
                 binding.tvBio.visibility = View.INVISIBLE
@@ -122,6 +121,24 @@ class DetailsActivity : AppCompatActivity() {
                 )
             binding.tvFollowing.text = getString(R.string.following, following)
         }
+    }
+
+    private fun shareUserDetails(userResponse: UserResponse) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+
+        val userDetails = StringBuilder()
+        userDetails.append("GitHub User Details\n\n")
+        userResponse.name?.let { userDetails.append("Name: $it\n") }
+        userDetails.append("Username: ${userResponse.login}\n")
+        userResponse.bio?.let { userDetails.append("Bio: $it\n") }
+        userDetails.append("Followers: ${userResponse.followers}\n")
+        userDetails.append("Following: ${userResponse.following}\n")
+        userDetails.append("Public Repos: ${userResponse.publicRepos}\n")
+        userDetails.append("URL: ${userResponse.htmlUrl}")
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, userDetails.toString())
+        startActivity(Intent.createChooser(shareIntent, "Share user details"))
     }
 
     private fun showLoading(isLoading: Boolean) {
