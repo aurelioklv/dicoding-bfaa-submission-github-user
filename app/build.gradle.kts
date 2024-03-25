@@ -70,12 +70,15 @@ dependencies {
 
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
-    implementation(libs.androidx.preference)
     ksp("androidx.room:room-compiler:2.6.1")
+
+    implementation(libs.androidx.preference)
+    implementation(libs.core.ktx)
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
