@@ -4,13 +4,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.aurelioklv.githubuser.data.SettingPreferences
 import com.aurelioklv.githubuser.data.remote.api.ApiConfig
 import com.aurelioklv.githubuser.data.remote.response.UserSearchItem
 import com.aurelioklv.githubuser.data.remote.response.UserSearchResponse
+import kotlinx.coroutines.launch
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val pref: SettingPreferences) : ViewModel() {
     private val _users = MutableLiveData<List<UserSearchItem>>()
     val users: LiveData<List<UserSearchItem>> = _users
 
@@ -50,6 +54,16 @@ class MainViewModel : ViewModel() {
                 Log.e(TAG, "onFailure: ${t.message}")
             }
         })
+    }
+
+    fun getThemeSettings(): LiveData<Boolean> {
+        return pref.getThemeSetting().asLiveData()
+    }
+
+    fun saveThemeSetting(isDarkModeActive: Boolean) {
+        viewModelScope.launch {
+            pref.saveThemeSetting(isDarkModeActive)
+        }
     }
 
     companion object {

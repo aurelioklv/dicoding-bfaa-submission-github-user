@@ -4,16 +4,21 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.aurelioklv.githubuser.data.FavoriteUserRepository
+import com.aurelioklv.githubuser.data.SettingPreferences
+import com.aurelioklv.githubuser.data.dataStore
 import com.aurelioklv.githubuser.di.Injection
 import com.aurelioklv.githubuser.ui.details.DetailsViewModel
 import com.aurelioklv.githubuser.ui.favorite.FavoriteViewModel
 import com.aurelioklv.githubuser.ui.main.MainViewModel
 
-class ViewModelFactory private constructor(private val repository: FavoriteUserRepository) :
+class ViewModelFactory private constructor(
+    private val repository: FavoriteUserRepository,
+    private val pref: SettingPreferences,
+) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel() as T
+            return MainViewModel(pref) as T
         } else if (modelClass.isAssignableFrom(DetailsViewModel::class.java)) {
             return DetailsViewModel(repository) as T
         } else if (modelClass.isAssignableFrom(FavoriteViewModel::class.java)) {
@@ -28,7 +33,10 @@ class ViewModelFactory private constructor(private val repository: FavoriteUserR
 
         fun getInstance(context: Context): ViewModelFactory =
             instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(Injection.provideRepository(context))
+                instance ?: ViewModelFactory(
+                    Injection.provideRepository(context),
+                    SettingPreferences.getInstance(context.dataStore)
+                )
             }
     }
 }

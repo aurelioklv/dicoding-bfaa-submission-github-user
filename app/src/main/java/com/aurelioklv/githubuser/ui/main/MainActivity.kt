@@ -8,16 +8,21 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aurelioklv.githubuser.R
 import com.aurelioklv.githubuser.data.remote.response.UserSearchItem
 import com.aurelioklv.githubuser.databinding.ActivityMainBinding
 import com.aurelioklv.githubuser.ui.favorite.FavoriteActivity
+import com.aurelioklv.githubuser.util.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainViewModel by viewModels()
+
+    private val viewModel: MainViewModel by viewModels<MainViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +41,22 @@ class MainActivity : AppCompatActivity() {
         observeLiveData()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+        val toggleThemeMenuItem = menu.findItem(R.id.menu_theme)
+        viewModel.getThemeSettings().observe(this) { isDarkModeActive ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                toggleThemeMenuItem.setIcon(R.drawable.baseline_dark_mode_24)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                toggleThemeMenuItem.setIcon(R.drawable.baseline_light_mode_24)
+            }
+            toggleThemeMenuItem?.setOnMenuItemClickListener {
+                viewModel.saveThemeSetting(!isDarkModeActive)
+                true
+            }
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -46,10 +65,7 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_favorite -> {
                 val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
                 startActivity(intent)
-                true
             }
-
-            else -> Toast.makeText(this, "Click menu $item", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }

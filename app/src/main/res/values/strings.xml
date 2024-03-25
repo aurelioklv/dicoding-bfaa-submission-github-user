@@ -17,4 +17,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="error_message">Something went wrong. Try again later</string>
     <string name="favorite">Favorite</string>
+    <string name="theme">Theme</string>
 </resources>
